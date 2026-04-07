@@ -38,14 +38,12 @@ export default function Hero() {
           </motion.div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-white mb-6">
-            Public Participation,{" "}
-            <span className="text-green-400">Respect for Diversity</span>
-            <span className="block">& Peaceful Co-existence</span>
+            SEE SOMETHING, SAY SOMETHING,{" "}
+            <span className="text-green-400">Don't wait till a crime happens.</span>
           </h1>
 
           <p className="text-gray-300 text-lg leading-relaxed mb-8 max-w-xl">
-            To monitor, mitigate and prevent conflicts with the view to promoting
-            peaceful and harmonious co-existence in Ekiti State.
+            A Peaceful Ekiti State is what we need. Don't hold information to yourself.
           </p>
 
           <div className="flex flex-wrap gap-4">
