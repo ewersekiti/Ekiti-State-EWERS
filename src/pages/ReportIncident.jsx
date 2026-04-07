@@ -31,7 +31,7 @@ const STEPS = [
   { id: 2, label: "Reporter Info", icon: FaUser },
   { id: 3, label: "Context", icon: FaUsers },
   { id: 4, label: "Evidence", icon: FaCamera },
-  { id: 5, label: "Severity", icon: FaExclamationTriangle },
+  { id: 5, label: "Status", icon: FaExclamationTriangle },
   { id: 6, label: "Consent", icon: FaShieldAlt },
 ];
 
@@ -78,12 +78,6 @@ const EKITI_LCDAS = [
   "Okemesi/Ido-Ile LCDA",
 ];
 
-const SEVERITY_LEVELS = [
-  { value: "low",       label: "Low",       description: "Minor incident, no immediate danger",          dot: "bg-blue-500",   border: "border-blue-400",   bg: "bg-blue-50",   text: "text-blue-700",   badge: "bg-blue-100 text-blue-700"   },
-  { value: "medium",    label: "Medium",    description: "Moderate concern, needs attention",             dot: "bg-yellow-500", border: "border-yellow-400", bg: "bg-yellow-50", text: "text-yellow-700", badge: "bg-yellow-100 text-yellow-700" },
-  { value: "high",      label: "High",      description: "Serious incident requiring quick response",     dot: "bg-orange-500", border: "border-orange-400", bg: "bg-orange-50", text: "text-orange-700", badge: "bg-orange-100 text-orange-700" },
-  { value: "emergency", label: "Emergency", description: "Life-threatening, immediate action needed",     dot: "bg-red-500",    border: "border-red-400",    bg: "bg-red-50",    text: "text-red-700",    badge: "bg-red-100 text-red-700"    },
-];
 
 const initialForm = {
   // Step 1
@@ -98,7 +92,7 @@ const initialForm = {
   // Step 4
   images: [], documents: [],
   // Step 5
-  severity: "", isOngoing: null,
+  isOngoing: null,
   // Step 6
   accuracyConfirmed: false, dataConsent: false,
 };
@@ -749,35 +743,6 @@ function Step4({ form, update }) {
 function Step5({ form, update }) {
   return (
     <div className="flex flex-col gap-6">
-      <Field label="Severity Level" required hint="How serious is this incident?">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {SEVERITY_LEVELS.map(({ value, label, description, dot, border, bg, text, badge }) => {
-            const selected = form.severity === value;
-            return (
-              <button
-                key={value}
-                type="button"
-                onClick={() => update("severity", value)}
-                className={`p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
-                  selected ? `${bg} ${border} shadow-md` : "bg-gray-50 border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dot}`} />
-                  <span className={`text-sm font-bold ${selected ? text : "text-gray-700"}`}>{label}</span>
-                  {selected && (
-                    <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${badge}`}>
-                      Selected
-                    </span>
-                  )}
-                </div>
-                <p className={`text-xs ${selected ? text : "text-gray-400"}`}>{description}</p>
-              </button>
-            );
-          })}
-        </div>
-      </Field>
-
       <Field label="Is this Incident Still Ongoing?">
         <div className="flex flex-col gap-3">
           <ChoiceGroup
@@ -828,7 +793,6 @@ function Step6({ form, update }) {
             ["LGA",          form.lga || "—"],
             ["LCDA",         form.lcda || "—"],
             ["Location",     form.location || "—"],
-            ["Severity",     form.severity ? form.severity.charAt(0).toUpperCase() + form.severity.slice(1) : "—"],
             ["Casualties",   casualties > 0 ? `${form.killed || 0} killed · ${form.injured || 0} injured · ${form.displaced || 0} displaced` : "None reported"],
             ["Reporting as", form.anonymous ? "Anonymous" : (form.fullName || "—")],
             ["Attachments",  `${form.images.length + form.documents.length} file(s)`],
@@ -976,7 +940,6 @@ export default function ReportIncident() {
       body.append('displaced',          form.displaced || '0');
       body.append('injuryDetails',      form.injuryDetails || '');
       body.append('authorityContacted', form.authorityContacted ? 'yes' : 'no');
-      body.append('severity',           form.severity || 'low');
       body.append('isOngoing',          String(form.isOngoing === true));
 
       // Attach images and videos

@@ -238,9 +238,10 @@ export default function IncidentDetails() {
   const [incident,      setIncident]      = useState(null)
   const [fieldOfficers, setFieldOfficers] = useState([])
   const [loading,       setLoading]       = useState(true)
-  const [assigneeId,    setAssigneeId]    = useState('')
-  const [assignError,   setAssignError]   = useState('')
-  const [assignLoading, setAssignLoading] = useState(false)
+  const [assigneeId,      setAssigneeId]      = useState('')
+  const [assignPriority,  setAssignPriority]  = useState('medium')
+  const [assignError,     setAssignError]     = useState('')
+  const [assignLoading,   setAssignLoading]   = useState(false)
   const [lightboxIdx,   setLightboxIdx]   = useState(null)
   const [showResolve,   setShowResolve]   = useState(false)
   const [showAlert,     setShowAlert]     = useState(false)
@@ -254,6 +255,7 @@ export default function IncidentDetails() {
       .then(([incData, usersData]) => {
         setIncident(incData.incident)
         setAssigneeId(incData.incident?.assignedTo?._id || '')
+        setAssignPriority(incData.incident?.priority || 'medium')
         setFieldOfficers(usersData.users || [])
       })
       .catch(console.error)
@@ -270,7 +272,7 @@ export default function IncidentDetails() {
     setAssignError('')
     setAssignLoading(true)
     try {
-      await api.patch(`/incidents/${id}/assign`, { userId: assigneeId })
+      await api.patch(`/incidents/${id}/assign`, { userId: assigneeId, priority: assignPriority })
       await refreshIncident()
     } catch (err) {
       setAssignError(err.message || 'Assignment failed')
@@ -679,13 +681,36 @@ export default function IncidentDetails() {
                   <select
                     value={assigneeId}
                     onChange={(e) => { setAssigneeId(e.target.value); setAssignError('') }}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white mb-2"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white mb-3"
                   >
                     <option value="">Select field officer…</option>
                     {fieldOfficers.map((u) => (
                       <option key={u._id} value={u._id}>{u.name} — {u.agency}</option>
                     ))}
                   </select>
+                  <p className="text-xs font-semibold text-gray-600 mb-1.5">Case Severity</p>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {[
+                      { value: 'low',      label: 'Low',      desc: 'Routine response',           color: 'text-gray-600',   ring: 'ring-gray-400',   bg: 'bg-gray-50'   },
+                      { value: 'medium',   label: 'Medium',   desc: 'Timely attention needed',    color: 'text-yellow-700', ring: 'ring-yellow-400', bg: 'bg-yellow-50' },
+                      { value: 'high',     label: 'High',     desc: 'Quick response required',    color: 'text-orange-700', ring: 'ring-orange-400', bg: 'bg-orange-50' },
+                      { value: 'critical', label: 'Critical', desc: 'Immediate action needed',    color: 'text-red-700',    ring: 'ring-red-400',    bg: 'bg-red-50'    },
+                    ].map(({ value, label, desc, color, ring, bg }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setAssignPriority(value)}
+                        className={`p-2.5 rounded-xl border-2 text-left transition-all duration-150 ${
+                          assignPriority === value
+                            ? `${bg} border-current ring-1 ${ring} ${color}`
+                            : 'bg-white border-gray-100 hover:border-gray-300 text-gray-500'
+                        }`}
+                      >
+                        <p className={`text-xs font-bold ${assignPriority === value ? color : 'text-gray-700'}`}>{label}</p>
+                        <p className={`text-[10px] mt-0.5 ${assignPriority === value ? color : 'text-gray-400'}`}>{desc}</p>
+                      </button>
+                    ))}
+                  </div>
                   {assignError && <p className="text-xs text-red-500 mb-2">{assignError}</p>}
                   <button
                     onClick={handleAssign}
