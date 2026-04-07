@@ -8,6 +8,7 @@ import {
   HiOutlineShieldCheck,
   HiOutlineChartBar,
   HiOutlineOfficeBuilding,
+  HiOutlineCog,
   HiX,
   HiOutlineUserCircle,
 } from 'react-icons/hi'
@@ -35,8 +36,9 @@ const NAV_GROUPS = [
     items: [
       { label: 'Users',    icon: HiOutlineUsers,          path: '/dashboard/users',    permission: 'manage_users' },
       { label: 'Roles',    icon: HiOutlineShieldCheck,    path: '/dashboard/roles',    permission: 'manage_roles' },
-      { label: 'Agencies', icon: HiOutlineOfficeBuilding, path: '/dashboard/agencies', permission: 'manage_users' },
-      { label: 'Reports',  icon: HiOutlineChartBar,       path: '/dashboard/reports',  permission: 'view_reports' },
+      { label: 'Agencies', icon: HiOutlineOfficeBuilding, path: '/dashboard/agencies', permission: 'manage_users'   },
+      { label: 'Config',   icon: HiOutlineCog,            path: '/dashboard/config',   permission: 'manage_config' },
+      { label: 'Reports',  icon: HiOutlineChartBar,       path: '/dashboard/reports',  permission: 'view_reports'  },
     ],
   },
 ]

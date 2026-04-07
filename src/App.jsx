@@ -19,6 +19,7 @@ import UserList from "./pages/dashboard/UserList";
 import CreateUser from "./pages/dashboard/CreateUser";
 import RoleManagement from "./pages/dashboard/RoleManagement";
 import AgencyManagement from "./pages/dashboard/AgencyManagement";
+import ConfigManagement from "./pages/dashboard/ConfigManagement";
 import Reports from "./pages/dashboard/Reports";
 import Profile from "./pages/dashboard/Profile";
 
@@ -43,6 +44,7 @@ function App() {
           <Route path="users/create" element={<CreateUser />} />
           <Route path="roles" element={<RoleManagement />} />
           <Route path="agencies" element={<AgencyManagement />} />
+          <Route path="config"   element={<ConfigManagement />} />
           <Route path="reports" element={<Reports />} />
           <Route path="profile" element={<Profile />} />
         </Route>

@@ -20,6 +20,7 @@ const ALL_PERMISSIONS = [
   { key: 'delete_incident',         label: 'Delete Incident'          },
   { key: 'manage_users',            label: 'Manage Users'             },
   { key: 'manage_roles',            label: 'Manage Roles'             },
+  { key: 'manage_config',           label: 'Manage System Config'     },
   { key: 'view_reports',            label: 'View Reports'             },
   { key: 'send_alert',              label: 'Alert the Public'         },
 ]

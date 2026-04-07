@@ -6,7 +6,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 export const ROLE_PERMISSIONS = {
   it_admin: [
     'view_dashboard', 'view_incidents', 'assign_incident', 'update_incident',
-    'delete_incident', 'manage_users', 'manage_roles', 'view_reports',
+    'delete_incident', 'manage_users', 'manage_roles', 'manage_config', 'view_reports', 'send_alert',
   ],
   dispatcher: ['view_dashboard', 'view_incidents', 'assign_incident', 'update_incident'],
   sms_intake_officer: ['view_dashboard', 'create_sms_incident'],

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import logo from "../assets/images/ekitiundp.png";
 import footerBg from "../assets/images/footer-bg.png";
 import {
@@ -10,12 +11,14 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 
-const partners = [
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
+const FALLBACK_PARTNERS = [
   "Nigeria Police Force",
   "Nigerian Navy",
   "Department of State Services",
   "Nigeria Security and Civil Defence Corps",
-];
+]
 
 const contactItems = [
   { icon: FaMapMarkerAlt, text: "Government of Ekiti State, Nigeria" },
@@ -25,6 +28,19 @@ const contactItems = [
 ];
 
 export default function Footer() {
+  const [partners, setPartners] = useState(FALLBACK_PARTNERS)
+
+  useEffect(() => {
+    fetch(`${API_BASE}/config/partners?active=true`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((data) => {
+        if (data.partners?.length > 0) {
+          setPartners(data.partners.map((p) => p.name))
+        }
+      })
+      .catch(() => { /* keep fallback */ })
+  }, [])
+
   return (
     <footer>
       {/* Main footer body */}

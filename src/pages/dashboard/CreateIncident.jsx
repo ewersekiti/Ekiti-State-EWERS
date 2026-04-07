@@ -1,28 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HiOutlineArrowLeft, HiOutlineCheckCircle } from 'react-icons/hi'
 import { AGENCIES } from '../../data/mockData'
 import api from '../../services/api'
 
-const INCIDENT_TYPES = [
+const FALLBACK_TYPES = [
   'Armed Robbery', 'Building Collapse', 'Road Traffic Accident',
   'Flooding', 'Fire Outbreak', 'Gas Explosion', 'Missing Person',
   'Medical Emergency', 'Civil Unrest', 'Other',
+]
+
+const FALLBACK_LGAS = [
+  'Ado-Ekiti', 'Efon', 'Ekiti East', 'Ekiti South-West', 'Ekiti West',
+  'Emure', 'Gbonyin', 'Ijero', 'Ikere', 'Ikole', 'Ilejemeje',
+  'Irepodun/Ifelodun', 'Ise/Orun', 'Moba', 'Oye', 'Ido/Osi',
 ]
 
 const PRIORITIES = ['low', 'medium', 'high', 'critical']
 
 const CHANNELS = ['web', 'app', 'sms', 'phone']
 
-const EKITI_LGAS = [
-  'Ado-Ekiti', 'Ikere-Ekiti', 'Oye-Ekiti', 'Ikole-Ekiti', 'Ijero-Ekiti',
-  'Efon-Alaaye', 'Emure-Ekiti', 'Ilejemeje', 'Irepodun/Ifelodun', 'Ise-Orun',
-  'Moba', 'Gbonyin', 'Ekiti East', 'Ekiti West', 'Ekiti South West', 'Ido-Osi',
-]
-
 export default function CreateIncident() {
   const navigate = useNavigate()
   const [submitted, setSubmitted] = useState(false)
+
+  const [incidentTypes, setIncidentTypes] = useState(FALLBACK_TYPES)
+  const [lgas,          setLgas]          = useState(FALLBACK_LGAS)
+
+  useEffect(() => {
+    api.get('/config/incident-types?active=true')
+      .then((d) => { if (d.types?.length > 0) setIncidentTypes(d.types.map((t) => t.name)) })
+      .catch(() => {})
+    api.get('/config/locations?type=lga&active=true')
+      .then((d) => { if (d.locations?.length > 0) setLgas(d.locations.map((l) => l.name)) })
+      .catch(() => {})
+  }, [])
   const [form, setForm] = useState({
     title: '',
     type: '',
@@ -144,7 +156,7 @@ export default function CreateIncident() {
                 className={inputClass('type')}
               >
                 <option value="">Select type...</option>
-                {INCIDENT_TYPES.map((t) => <option key={t}>{t}</option>)}
+                {incidentTypes.map((t) => <option key={t}>{t}</option>)}
               </select>
             </Field>
 
@@ -183,7 +195,7 @@ export default function CreateIncident() {
                 className={inputClass('lga')}
               >
                 <option value="">Select LGA...</option>
-                {EKITI_LGAS.map((l) => <option key={l}>{l}</option>)}
+                {lgas.map((l) => <option key={l}>{l}</option>)}
               </select>
             </Field>
 

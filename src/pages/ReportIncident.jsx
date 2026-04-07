@@ -35,47 +35,20 @@ const STEPS = [
   { id: 6, label: "Consent", icon: FaShieldAlt },
 ];
 
-const INCIDENT_TYPES = ["Theft", "Assault", "Fraud", "Accident", "Fire", "Other"];
+const FALLBACK_INCIDENT_TYPES = ["Theft", "Assault", "Fraud", "Accident", "Fire", "Other"];
 
-const EKITI_LGAS = [
-  "Ado-Ekiti",
-  "Efon",
-  "Ekiti East",
-  "Ekiti South-West",
-  "Ekiti West",
-  "Emure",
-  "Gbonyin",
-  "Ijero",
-  "Ikere",
-  "Ikole",
-  "Ilejemeje",
-  "Irepodun/Ifelodun",
-  "Ise/Orun",
-  "Moba",
-  "Oye",
-  "Ido/Osi",
+const FALLBACK_LGAS = [
+  "Ado-Ekiti", "Efon", "Ekiti East", "Ekiti South-West", "Ekiti West",
+  "Emure", "Gbonyin", "Ijero", "Ikere", "Ikole", "Ilejemeje",
+  "Irepodun/Ifelodun", "Ise/Orun", "Moba", "Oye", "Ido/Osi",
 ];
 
-const EKITI_LCDAS = [
-  "Ado Central LCDA",
-  "Ado North LCDA",
-  "Ado West LCDA",
-  "Ajoni LCDA",
-  "Araromi LCDA",
-  "Ekameta LCDA",
-  "Ekiti Southeast LCDA",
-  "Ero LCDA",
-  "Gbonyin LCDA",
-  "Ifedara LCDA",
-  "Ifeloju LCDA",
-  "Ifesowapo LCDA",
-  "Igbara Odo/Ogotun LCDA",
-  "Ikere West LCDA",
-  "Ikole West LCDA",
-  "Irede LCDA",
-  "Irewolede LCDA",
-  "Isokan LCDA",
-  "Okemesi/Ido-Ile LCDA",
+const FALLBACK_LCDAS = [
+  "Ado Central LCDA", "Ado North LCDA", "Ado West LCDA", "Ajoni LCDA",
+  "Araromi LCDA", "Ekameta LCDA", "Ekiti Southeast LCDA", "Ero LCDA",
+  "Gbonyin LCDA", "Ifedara LCDA", "Ifeloju LCDA", "Ifesowapo LCDA",
+  "Igbara Odo/Ogotun LCDA", "Ikere West LCDA", "Ikole West LCDA",
+  "Irede LCDA", "Irewolede LCDA", "Isokan LCDA", "Okemesi/Ido-Ile LCDA",
 ];
 
 
@@ -411,7 +384,7 @@ function LocationField({ value, onChange, onCoords, latitude, longitude }) {
 
 // ─── Step panels ──────────────────────────────────────────────────────────────
 
-function Step1({ form, update }) {
+function Step1({ form, update, incidentTypes, lgas, lcdas }) {
   return (
     <div className="flex flex-col gap-6">
       <Field label="Incident Title" required>
@@ -424,21 +397,18 @@ function Step1({ form, update }) {
       </Field>
 
       <Field label="Incident Type" required>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {INCIDENT_TYPES.map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => update("type", type)}
-              className={`py-2.5 px-4 rounded-xl text-sm font-semibold border-2 transition-all duration-200 ${
-                form.type === type
-                  ? "bg-green-600 border-green-600 text-white shadow-md shadow-green-500/20"
-                  : "bg-gray-50 border-gray-200 text-gray-600 hover:border-green-400 hover:text-green-700"
-              }`}
-            >
-              {type}
-            </button>
-          ))}
+        <div className="relative">
+          <select
+            className="input appearance-none pr-10 cursor-pointer"
+            value={form.type}
+            onChange={(e) => update("type", e.target.value)}
+          >
+            <option value="" disabled>Select incident type…</option>
+            {incidentTypes.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+          <FaChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
         </div>
       </Field>
 
@@ -471,7 +441,7 @@ function Step1({ form, update }) {
             onChange={(e) => update("lga", e.target.value)}
           >
             <option value="" disabled>Select an LGA</option>
-            {EKITI_LGAS.map((lga) => (
+            {lgas.map((lga) => (
               <option key={lga} value={lga}>{lga}</option>
             ))}
           </select>
@@ -487,7 +457,7 @@ function Step1({ form, update }) {
             onChange={(e) => update("lcda", e.target.value)}
           >
             <option value="">Select an LCDA (optional)</option>
-            {EKITI_LCDAS.map((lcda) => (
+            {lcdas.map((lcda) => (
               <option key={lcda} value={lcda}>{lcda}</option>
             ))}
           </select>
@@ -893,11 +863,32 @@ const slideVariants = {
   exit:  (dir) => ({ x: dir > 0 ? -56 : 56, opacity: 0 }),
 };
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
 export default function ReportIncident() {
   const [step, setStep]         = useState(1);
   const [direction, setDirection] = useState(1);
   const [form, setForm]         = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
+
+  const [incidentTypes, setIncidentTypes] = useState(FALLBACK_INCIDENT_TYPES);
+  const [lgas,          setLgas]          = useState(FALLBACK_LGAS);
+  const [lcdas,         setLcdas]         = useState(FALLBACK_LCDAS);
+
+  useEffect(() => {
+    Promise.allSettled([
+      fetch(`${API_BASE}/config/incident-types?active=true`).then((r) => r.ok ? r.json() : Promise.reject()),
+      fetch(`${API_BASE}/config/locations?type=lga&active=true`).then((r)  => r.ok ? r.json() : Promise.reject()),
+      fetch(`${API_BASE}/config/locations?type=lcda&active=true`).then((r) => r.ok ? r.json() : Promise.reject()),
+    ]).then(([typesRes, lgasRes, lcdasRes]) => {
+      if (typesRes.status === 'fulfilled' && typesRes.value.types?.length > 0)
+        setIncidentTypes(typesRes.value.types.map((t) => t.name))
+      if (lgasRes.status === 'fulfilled' && lgasRes.value.locations?.length > 0)
+        setLgas(lgasRes.value.locations.map((l) => l.name))
+      if (lcdasRes.status === 'fulfilled' && lcdasRes.value.locations?.length > 0)
+        setLcdas(lcdasRes.value.locations.map((l) => l.name))
+    })
+  }, []);
 
   const update = (field, value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -1056,7 +1047,7 @@ export default function ReportIncident() {
                   exit="exit"
                   transition={{ duration: 0.22, ease: "easeInOut" }}
                 >
-                  {step === 1 && <Step1 form={form} update={update} />}
+                  {step === 1 && <Step1 form={form} update={update} incidentTypes={incidentTypes} lgas={lgas} lcdas={lcdas} />}
                   {step === 2 && <Step2 form={form} update={update} />}
                   {step === 3 && <Step3 form={form} update={update} />}
                   {step === 4 && <Step4 form={form} update={update} />}
