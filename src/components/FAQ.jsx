@@ -71,7 +71,7 @@ export default function FAQ() {
             <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <p className="text-gray-800 font-semibold text-sm mb-1">Still have questions?</p>
               <p className="text-gray-400 text-xs mb-4">Our support team is available 24/7.</p>
-              <a href="mailto:ekitistateresponse@gmail.com"
+              <a href="mailto:ewersekiti@gmail.com"
                 className="block w-full text-center bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
                 Contact Support
               </a>

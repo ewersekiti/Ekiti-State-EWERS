@@ -72,7 +72,7 @@ export default function Login() {
         {/* Stats strip */}
         <div className="relative z-10 m-10 mt-8 grid grid-cols-3 gap-4">
           {[
-            { value: "16", label: "LGAs Covered" },
+            { value: "38", label: "LGAs & LCDAs" },
             { value: "24/7", label: "Active Monitoring" },
             { value: "100%", label: "Encrypted" },
           ].map(({ value, label }) => (

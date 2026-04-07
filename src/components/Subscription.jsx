@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt, FaBell } from "react-icons/fa";
 
 const contactItems = [
-  { icon: FaEnvelope, label: "Email", value: "ekitistateresponse@gmail.com" },
+  { icon: FaEnvelope, label: "Email", value: "ewersekiti@gmail.com" },
   { icon: FaPhoneAlt, label: "Phone", value: "09062547141" },
   { icon: FaMapMarkerAlt, label: "Address", value: "Government of Ekiti State, Nigeria" },
 ];

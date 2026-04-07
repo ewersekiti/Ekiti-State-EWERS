@@ -7,7 +7,7 @@ import {
   HiOutlineCheckCircle, HiOutlineExclamation,
   HiOutlineChevronLeft, HiOutlineChevronRight,
   HiOutlineBell, HiOutlineMap, HiOutlineInformationCircle,
-  HiOutlineMail, HiOutlineShieldExclamation,
+  HiOutlineMail, HiOutlineShieldExclamation, HiOutlineBan,
 } from 'react-icons/hi'
 import { AnimatePresence, motion } from 'framer-motion'
 import PermissionGuard from '../../components/dashboard/PermissionGuard'
@@ -18,6 +18,7 @@ const STATUS_CONFIG = {
   pending:     { label: 'Pending',     color: 'bg-yellow-100 text-yellow-700', dot: 'bg-yellow-500' },
   in_progress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700',     dot: 'bg-blue-500'   },
   resolved:    { label: 'Resolved',    color: 'bg-green-100 text-green-700',   dot: 'bg-green-500'  },
+  false_alarm: { label: 'False Alarm', color: 'bg-orange-100 text-orange-700', dot: 'bg-orange-500' },
 }
 const PRIORITY_CONFIG = {
   critical: 'bg-red-100 text-red-700',
@@ -246,6 +247,44 @@ function ResolveModal({ onConfirm, onCancel }) {
   )
 }
 
+// ── False Alarm modal ─────────────────────────────────────────────────────────
+function FalseAlarmModal({ onConfirm, onCancel }) {
+  const [note, setNote] = useState('')
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+            <HiOutlineBan className="text-orange-600 text-xl" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-gray-900">Mark as False Alarm?</h3>
+            <p className="text-xs text-gray-400 mt-0.5">Confirm this incident was not a real emergency.</p>
+          </div>
+        </div>
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Note <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Explain why this was a false alarm, what was found on the ground…"
+            rows={4}
+            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 resize-none"
+          />
+        </div>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 py-2.5 border border-gray-200 text-sm font-semibold text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onClick={() => onConfirm(note)} className="flex-1 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-xl hover:bg-orange-600 transition-colors">Yes, False Alarm</button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function IncidentDetails() {
   const { id } = useParams()
@@ -260,9 +299,10 @@ export default function IncidentDetails() {
   const [assignError,     setAssignError]     = useState('')
   const [assignLoading,   setAssignLoading]   = useState(false)
   const [lightboxIdx,   setLightboxIdx]   = useState(null)
-  const [showResolve,   setShowResolve]   = useState(false)
-  const [showAlert,     setShowAlert]     = useState(false)
-  const [alertSuccess,  setAlertSuccess]  = useState(false)
+  const [showResolve,     setShowResolve]     = useState(false)
+  const [showFalseAlarm,  setShowFalseAlarm]  = useState(false)
+  const [showAlert,       setShowAlert]       = useState(false)
+  const [alertSuccess,    setAlertSuccess]    = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -317,6 +357,16 @@ export default function IncidentDetails() {
     }
   }
 
+  const handleFalseAlarm = async (note = '') => {
+    setShowFalseAlarm(false)
+    try {
+      await api.patch(`/incidents/${id}/status`, { status: 'false_alarm', note })
+      await refreshIncident()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto space-y-5 animate-pulse">
@@ -342,9 +392,11 @@ export default function IncidentDetails() {
     )
   }
 
-  const statusCfg  = STATUS_CONFIG[incident.status] || STATUS_CONFIG.pending
-  const isResolved = incident.status === 'resolved'
-  const media      = incident.media || []
+  const statusCfg    = STATUS_CONFIG[incident.status] || STATUS_CONFIG.pending
+  const isResolved   = incident.status === 'resolved'
+  const isFalseAlarm = incident.status === 'false_alarm'
+  const isClosed     = isResolved || isFalseAlarm
+  const media        = incident.media || []
 
   // Casualties
   const killed    = Number(incident.killed    || 0)
@@ -411,7 +463,7 @@ export default function IncidentDetails() {
 
               {/* Mark Resolved */}
               <PermissionGuard permission="update_incident">
-                {!isResolved && incident.status === 'in_progress' && (
+                {!isClosed && incident.status === 'in_progress' && (
                   <button onClick={() => setShowResolve(true)}
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm">
                     <HiOutlineCheckCircle className="text-lg" /> Mark as Resolved
@@ -420,6 +472,21 @@ export default function IncidentDetails() {
                 {isResolved && (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-xl">
                     <HiOutlineCheckCircle className="text-lg" /> Case Resolved
+                  </div>
+                )}
+              </PermissionGuard>
+
+              {/* Mark False Alarm */}
+              <PermissionGuard permission="update_incident">
+                {!isClosed && (incident.status === 'pending' || incident.status === 'in_progress') && (
+                  <button onClick={() => setShowFalseAlarm(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm">
+                    <HiOutlineBan className="text-lg" /> False Alarm
+                  </button>
+                )}
+                {isFalseAlarm && (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-semibold rounded-xl">
+                    <HiOutlineBan className="text-lg" /> False Alarm
                   </div>
                 )}
               </PermissionGuard>
@@ -685,7 +752,7 @@ export default function IncidentDetails() {
 
             {/* Assign panel */}
             <PermissionGuard permission="assign_incident">
-              {!isResolved && (
+              {!isClosed && (
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                   <h2 className="font-semibold text-gray-900 mb-1">
                     {incident.assignedTo ? 'Reassign Officer' : 'Assign Officer'}
@@ -760,6 +827,17 @@ export default function IncidentDetails() {
                 )}
               </div>
             )}
+
+            {/* False Alarm banner */}
+            {isFalseAlarm && (
+              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 text-center">
+                <HiOutlineBan className="text-orange-500 text-3xl mx-auto mb-2" />
+                <p className="text-sm font-semibold text-orange-700">Marked as False Alarm</p>
+                <p className="text-xs text-orange-400 mt-1">
+                  Closed on {new Date(incident.updatedAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -770,6 +848,10 @@ export default function IncidentDetails() {
 
       <AnimatePresence>
         {showResolve && <ResolveModal onConfirm={handleResolve} onCancel={() => setShowResolve(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showFalseAlarm && <FalseAlarmModal onConfirm={handleFalseAlarm} onCancel={() => setShowFalseAlarm(false)} />}
       </AnimatePresence>
 
       {showAlert && (

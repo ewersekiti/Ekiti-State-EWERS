@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import about from "../assets/images/about1.png";
+// import about from "../assets/images/about1.png";
 import round from "../assets/images/round.png";
 import { FaCheckCircle } from "react-icons/fa";
 
 const stats = [
-  { value: "16", label: "LGAs" },
+  { value: "38", label: "LGAs & LCDAs" },
   { value: "5,887", label: "Sq. KM Area" },
   { value: "2.4M+", label: "Population" },
   { value: "1996", label: "Year Founded" },
@@ -33,15 +33,11 @@ export default function About() {
             {/* Decorative background blob */}
             <div className="absolute -inset-4 bg-linear-to-br from-green-100 to-blue-100 rounded-[40px] -rotate-3" />
             <img src={round} alt="" className="relative w-full" />
-            <img
-              src={about}
-              alt="About Ekiti State"
-              className="absolute inset-0 w-full h-full object-contain p-6"
-            />
+            
           </div>
 
           {/* Floating badge */}
-          <div className="absolute -bottom-4 right-4 md:right-0 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 flex items-center gap-3">
+          <div className="absolute -bottom-12 right-4 md:right-0 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
               <span className="text-green-700 font-black text-xs">24/7</span>
             </div>
@@ -70,7 +66,7 @@ export default function About() {
             Located between longitudes 4°51′ and 5°45′ East of the Greenwich meridian and
             latitudes 7°15′ and 8°5′ north of the Equator, Ekiti State lies south of Kwara
             and Kogi State, East of Osun State, and is bounded by Ondo State. With a total
-            land area of 5,887.89 sq km, the state has 16 Local Government Councils.
+            land area of 5,887.89 sq km, the state has 16 Local Government Areas (LGAs) and Local Council Development Areas (LCDAs).
           </p>
 
           <div className="space-y-3 mb-8">

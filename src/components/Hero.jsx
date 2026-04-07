@@ -4,7 +4,7 @@ import { FaShieldAlt, FaChevronDown } from "react-icons/fa";
 
 const stats = [
   { value: "24/7", label: "Emergency Response" },
-  { value: "16", label: "Local Govt. Areas" },
+  { value: "38", label: "LGAs & LCDAs" },
   { value: "3M+", label: "Residents Protected" },
   { value: "5–30 min", label: "Response Time" },
 ];

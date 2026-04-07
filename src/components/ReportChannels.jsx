@@ -21,7 +21,7 @@ const channels = [
     icon: <FaEnvelope size={28} />,
     title: "Email Channel",
     desc: "Send a detailed report to our dedicated emergency response email address.",
-    details: ["ekitistateresponse@gmail.com"],
+    details: ["ewersekiti@gmail.com"],
     iconBg: "bg-linear-to-br from-green-500 to-emerald-600",
     cardBg: "bg-linear-to-br from-green-50 to-emerald-50",
     border: "border-green-200",

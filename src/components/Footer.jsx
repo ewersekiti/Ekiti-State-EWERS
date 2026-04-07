@@ -23,7 +23,7 @@ const FALLBACK_PARTNERS = [
 const contactItems = [
   { icon: FaMapMarkerAlt, text: "Government of Ekiti State, Nigeria" },
   { icon: FaPhoneAlt, text: "09062547141" },
-  { icon: FaEnvelope, text: "ekitistateresponse@gmail.com" },
+  { icon: FaEnvelope, text: "ewersekiti@gmail.com" },
   { icon: FaClock, text: "Opening Hours: 24/7" },
 ];
 

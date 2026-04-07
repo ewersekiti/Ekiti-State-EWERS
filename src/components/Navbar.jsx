@@ -37,7 +37,7 @@ export default function Navbar() {
         <div className="hidden md:flex gap-5 items-center">
           <span className="flex items-center gap-1.5 hover:text-green-200 transition-colors cursor-default">
             <FaEnvelope className="text-green-300 shrink-0" />
-            ekitistateresponse@gmail.com
+            ewersekiti@gmail.com
           </span>
           <span className="text-green-600">|</span>
           <span className="flex items-center gap-1.5 hover:text-green-200 transition-colors cursor-default">
