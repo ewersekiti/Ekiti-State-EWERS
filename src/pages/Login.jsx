@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaShieldAlt } from "react-icons/fa";
 import ekiti from "../assets/images/ekitiundp.png";
-import heroBg from "../assets/images/home.jpg";
+import heroBg from "../assets/images/home.jpeg";
 import { useAuthStore } from "../store/authStore";
 
 export default function Login() {

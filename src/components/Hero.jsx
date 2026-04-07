@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import home from "../assets/images/home.jpg";
+import home from "../assets/images/home.jpeg";
 import { FaShieldAlt, FaChevronDown } from "react-icons/fa";
 
 const stats = [

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FiPlus, FiMinus } from "react-icons/fi";
-import imgfaq from "../assets/images/faqs.png";
+import imgfaq from "../assets/images/faqs.jpeg";
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
