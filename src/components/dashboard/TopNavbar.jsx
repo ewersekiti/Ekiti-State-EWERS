@@ -45,10 +45,7 @@ export default function TopNavbar({ onMenuToggle }) {
       {/* Right: notifications + profile */}
       <div className="flex items-center gap-3">
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <HiOutlineBell className="text-xl text-gray-500" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+      
 
         {/* Profile dropdown */}
         <div className="relative">
