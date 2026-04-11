@@ -10,8 +10,6 @@ import {
   FaExclamationTriangle,
   FaShieldAlt,
   FaCheck,
-  FaChevronRight,
-  FaChevronLeft,
   FaMapMarkerAlt,
   FaCalendarAlt,
   FaTimes,
@@ -25,15 +23,6 @@ import {
 } from "react-icons/fa";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const STEPS = [
-  { id: 1, label: "Incident Details", icon: FaFileAlt },
-  { id: 2, label: "Reporter Info", icon: FaUser },
-  { id: 3, label: "Context", icon: FaUsers },
-  { id: 4, label: "Evidence", icon: FaCamera },
-  { id: 5, label: "Status", icon: FaExclamationTriangle },
-  { id: 6, label: "Consent", icon: FaShieldAlt },
-];
 
 const FALLBACK_INCIDENT_TYPES = ["Theft", "Assault", "Fraud", "Accident", "Fire", "Other"];
 
@@ -857,18 +846,10 @@ function SuccessScreen() {
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-const slideVariants = {
-  enter: (dir) => ({ x: dir > 0 ? 56 : -56, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit:  (dir) => ({ x: dir > 0 ? -56 : 56, opacity: 0 }),
-};
-
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 export default function ReportIncident() {
-  const [step, setStep]         = useState(1);
-  const [direction, setDirection] = useState(1);
-  const [form, setForm]         = useState(initialForm);
+  const [form, setForm]           = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
 
   const [incidentTypes, setIncidentTypes] = useState(FALLBACK_INCIDENT_TYPES);
@@ -892,14 +873,6 @@ export default function ReportIncident() {
 
   const update = (field, value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
-
-  const goTo = (target) => {
-    setDirection(target > step ? 1 : -1);
-    setStep(target);
-  };
-
-  const next = () => goTo(Math.min(step + 1, STEPS.length));
-  const prev = () => goTo(Math.max(step - 1, 1));
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -933,9 +906,7 @@ export default function ReportIncident() {
       body.append('authorityContacted', form.authorityContacted ? 'yes' : 'no');
       body.append('isOngoing',          String(form.isOngoing === true));
 
-      // Attach images and videos
       form.images.forEach((file) => body.append('images', file));
-      // Documents go as images field too (backend stores all media together)
       form.documents.forEach((file) => body.append('images', file));
 
       await api.post('/incidents', body);
@@ -948,9 +919,6 @@ export default function ReportIncident() {
   }, [canSubmit, submitting, form]);
 
   if (submitted) return <SuccessScreen />;
-
-  const StepIcon = STEPS[step - 1].icon;
-  const progress = ((step - 1) / (STEPS.length - 1)) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-gray-50">
@@ -979,121 +947,51 @@ export default function ReportIncident() {
         </motion.div>
       </div>
 
-      {/* Sticky stepper */}
-      <div className="sticky top-[89px] z-40 bg-white shadow-sm border-b border-gray-100 px-6 md:px-20 py-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="relative flex items-center justify-between">
-            <div className="absolute inset-x-0 top-4 h-0.5 bg-gray-100 z-0" />
-            <div
-              className="absolute top-4 left-0 h-0.5 bg-green-500 z-0 transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-
-            {STEPS.map(({ id, label, icon: Icon }) => {
-              const done   = id < step;
-              const active = id === step;
-              return (
-                <button key={id} onClick={() => goTo(id)} className="flex flex-col items-center gap-1.5 z-10 group">
-                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                    done   ? "bg-green-600 border-green-600 text-white"
-                    : active ? "bg-white border-green-600 text-green-600 shadow-md shadow-green-500/20 scale-110"
-                             : "bg-white border-gray-200 text-gray-400 group-hover:border-green-300"
-                  }`}>
-                    {done ? <FaCheck size={10} /> : <Icon size={11} />}
-                  </div>
-                  <span className={`hidden md:block text-xs font-medium transition-colors ${
-                    active ? "text-green-700" : done ? "text-green-500" : "text-gray-400"
-                  }`}>
-                    {label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Form card */}
+      {/* Form */}
       <div className="py-10 px-6 md:px-20">
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-3xl shadow-xl shadow-black/5 border border-gray-100 overflow-hidden">
+            <div className="px-8 py-8 flex flex-col gap-10">
 
-            {/* Step header */}
-            <div className="px-8 pt-8 pb-6 border-b border-gray-50">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-green-100 flex items-center justify-center shrink-0">
-                  <StepIcon className="text-green-600 text-lg" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
-                    Step {step} of {STEPS.length}
-                  </p>
-                  <h2 className="text-xl font-bold text-gray-800">
-                    {STEPS[step - 1].label}
-                  </h2>
-                </div>
-              </div>
+              {/* All form fields */}
+              <Step1 form={form} update={update} incidentTypes={incidentTypes} lgas={lgas} lcdas={lcdas} />
+
+              <div className="border-t border-gray-100" />
+
+              <Step2 form={form} update={update} />
+
+              <div className="border-t border-gray-100" />
+
+              <Step3 form={form} update={update} />
+
+              <div className="border-t border-gray-100" />
+
+              <Step4 form={form} update={update} />
+
+              <div className="border-t border-gray-100" />
+
+              <Step5 form={form} update={update} />
             </div>
 
-            {/* Animated step content */}
-            <div className="px-8 py-8 overflow-hidden min-h-[360px]">
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={step}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.22, ease: "easeInOut" }}
-                >
-                  {step === 1 && <Step1 form={form} update={update} incidentTypes={incidentTypes} lgas={lgas} lcdas={lcdas} />}
-                  {step === 2 && <Step2 form={form} update={update} />}
-                  {step === 3 && <Step3 form={form} update={update} />}
-                  {step === 4 && <Step4 form={form} update={update} />}
-                  {step === 5 && <Step5 form={form} update={update} />}
-                  {step === 6 && <Step6 form={form} update={update} />}
-                </motion.div>
-              </AnimatePresence>
+            {/* Consent + Report Summary */}
+            <div className="border-t-2 border-green-100 bg-green-50/30 px-8 py-8">
+              <Step6 form={form} update={update} />
             </div>
 
-            {/* Navigation footer */}
-            <div className="px-8 py-6 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+            {/* Submit footer */}
+            <div className="px-8 py-6 bg-gray-50/50 border-t border-gray-100 flex items-center justify-end">
               <button
-                onClick={prev}
-                disabled={step === 1}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold border-2 transition-all duration-200 ${
-                  step === 1
-                    ? "border-gray-100 text-gray-300 cursor-not-allowed"
-                    : "border-gray-200 text-gray-600 hover:border-green-400 hover:text-green-700 active:scale-95"
+                onClick={handleSubmit}
+                disabled={!canSubmit || submitting}
+                className={`flex items-center gap-2 px-8 py-3 rounded-full text-sm font-bold transition-all duration-200 ${
+                  canSubmit && !submitting
+                    ? "bg-green-600 text-white hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 active:scale-95"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
               >
-                <FaChevronLeft size={11} /> Back
+                {submitting ? <FaSpinner size={11} className="animate-spin" /> : <FaCheck size={11} />}
+                {submitting ? 'Submitting…' : 'Submit Report'}
               </button>
-
-              <span className="text-xs text-gray-400 font-medium">{step} / {STEPS.length}</span>
-
-              {step < STEPS.length ? (
-                <button
-                  onClick={next}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold bg-green-600 text-white hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-200 active:scale-95"
-                >
-                  Next <FaChevronRight size={11} />
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  disabled={!canSubmit || submitting}
-                  className={`flex items-center gap-2 px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-200 ${
-                    canSubmit && !submitting
-                      ? "bg-green-600 text-white hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 active:scale-95"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  }`}
-                >
-                  {submitting ? <FaSpinner size={11} className="animate-spin" /> : <FaCheck size={11} />}
-                  {submitting ? 'Submitting…' : 'Submit Report'}
-                </button>
-              )}
             </div>
           </div>
 
