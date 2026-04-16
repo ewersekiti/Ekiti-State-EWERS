@@ -121,7 +121,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Ekiti State Early Warning and Early Response System.
             All rights reserved.
           </p>
-          <p className="text-gray-500 text-xs">Kikiotolu Solutions</p>
+          <a href="https://kikiotolu.com/web-design-nigeria" className="text-gray-500 text-xs">Kikiotolu Solutions</a>
         </div>
       </div>
     </footer>
