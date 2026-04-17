@@ -42,7 +42,7 @@ export default function Navbar() {
           <span className="text-green-600">|</span>
           <span className="flex items-center gap-1.5 hover:text-green-200 transition-colors cursor-default">
             <FaPhone className="text-green-300 shrink-0" />
-            09062547141
+            08000033555
           </span>
           <span className="text-green-600">|</span>
           <span className="flex items-center gap-1.5 cursor-default">

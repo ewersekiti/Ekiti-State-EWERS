@@ -9,7 +9,7 @@ const channels = [
     title: "Phone & SMS Channel",
     desc: "Call or SMS us directly to report any incident happening in your area.",
     details: [
-      "Call: 09062547141",
+      "Call: 08000033555",
       "SMS 08169007000 with EK01, your name, location and incident",
     ],
     iconBg: "bg-linear-to-br from-orange-500 to-amber-500",

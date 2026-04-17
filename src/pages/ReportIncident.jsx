@@ -1001,7 +1001,7 @@ export default function ReportIncident() {
 
           <p className="text-center text-xs text-gray-400 mt-6">
             Need immediate help? Call{" "}
-            <span className="font-semibold text-green-600">09062547141</span> · Available 24/7
+            <span className="font-semibold text-green-600">08000033555</span> · Available 24/7
           </p>
         </div>
       </div>
