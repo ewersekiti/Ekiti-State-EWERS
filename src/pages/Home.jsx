@@ -23,7 +23,6 @@ export default function Home() {
         <section id="home">
           <Hero />
         </section>
-
         <section id="report">
           <ReportChannels />
         </section>
