@@ -26,7 +26,6 @@ export default function Home() {
         <section id="report">
           <ReportChannels />
         </section>
-
         <section id="about">
           <About />
         </section>
