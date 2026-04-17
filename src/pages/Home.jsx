@@ -37,7 +37,6 @@ export default function Home() {
         <section id="subscription">
           <Subscription />
         </section>
-
         <section id="faqs">
           <FAQ />
         </section>
