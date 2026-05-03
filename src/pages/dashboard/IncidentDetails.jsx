@@ -8,10 +8,10 @@ import {
   HiOutlineChevronLeft, HiOutlineChevronRight,
   HiOutlineBell, HiOutlineMap, HiOutlineInformationCircle,
   HiOutlineMail, HiOutlineShieldExclamation, HiOutlineBan,
+  HiOutlineTrash,
 } from 'react-icons/hi'
 import { AnimatePresence, motion } from 'framer-motion'
 import PermissionGuard from '../../components/dashboard/PermissionGuard'
-import { useAuthStore } from '../../store/authStore'
 import api from '../../services/api'
 
 const STATUS_CONFIG = {
@@ -285,11 +285,45 @@ function FalseAlarmModal({ onConfirm, onCancel }) {
   )
 }
 
+// ── Delete modal ───────────────────────────────────────────────────────────
+function DeleteIncidentModal({ incident, onConfirm, onCancel, deleting, error }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+            <HiOutlineTrash className="text-red-600 text-xl" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-gray-900">Delete Incident?</h3>
+            <p className="text-xs text-gray-400 mt-0.5">{incident.incidentId}</p>
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          This will permanently delete <span className="font-semibold text-gray-900">{incident.title}</span>. This action cannot be undone.
+        </p>
+        {error && <p className="mt-4 text-sm text-red-500 bg-red-50 border border-red-100 px-3 py-2 rounded-xl">{error}</p>}
+        <div className="flex gap-3 mt-6">
+          <button onClick={onCancel} disabled={deleting}
+            className="flex-1 py-2.5 border border-gray-200 text-sm font-semibold text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-60">
+            Cancel
+          </button>
+          <button onClick={onConfirm} disabled={deleting}
+            className="flex-1 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors disabled:opacity-60">
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function IncidentDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuthStore()
 
   const [incident,      setIncident]      = useState(null)
   const [fieldOfficers, setFieldOfficers] = useState([])
@@ -302,6 +336,9 @@ export default function IncidentDetails() {
   const [showResolve,     setShowResolve]     = useState(false)
   const [showFalseAlarm,  setShowFalseAlarm]  = useState(false)
   const [showAlert,       setShowAlert]       = useState(false)
+  const [showDelete,      setShowDelete]      = useState(false)
+  const [deleteLoading,   setDeleteLoading]   = useState(false)
+  const [deleteError,     setDeleteError]     = useState('')
   const [alertSuccess,    setAlertSuccess]    = useState(false)
 
   useEffect(() => {
@@ -364,6 +401,18 @@ export default function IncidentDetails() {
       await refreshIncident()
     } catch (err) {
       console.error(err)
+    }
+  }
+
+  const handleDelete = async () => {
+    setDeleteLoading(true)
+    setDeleteError('')
+    try {
+      await api.delete(`/incidents/${id}`)
+      navigate('/dashboard/incidents')
+    } catch (err) {
+      setDeleteError(err.message || 'Failed to delete incident')
+      setDeleteLoading(false)
     }
   }
 
@@ -489,6 +538,14 @@ export default function IncidentDetails() {
                     <HiOutlineBan className="text-lg" /> False Alarm
                   </div>
                 )}
+              </PermissionGuard>
+
+              {/* Delete Incident */}
+              <PermissionGuard permission="delete_incident">
+                <button onClick={() => { setDeleteError(''); setShowDelete(true) }}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm">
+                  <HiOutlineTrash className="text-lg" /> Delete
+                </button>
               </PermissionGuard>
             </div>
           </div>
@@ -852,6 +909,18 @@ export default function IncidentDetails() {
 
       <AnimatePresence>
         {showFalseAlarm && <FalseAlarmModal onConfirm={handleFalseAlarm} onCancel={() => setShowFalseAlarm(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showDelete && (
+          <DeleteIncidentModal
+            incident={incident}
+            onConfirm={handleDelete}
+            onCancel={() => { setShowDelete(false); setDeleteError('') }}
+            deleting={deleteLoading}
+            error={deleteError}
+          />
+        )}
       </AnimatePresence>
 
       {showAlert && (

@@ -11,7 +11,7 @@ export const AGENCIES = [
 ]
 
 export const ROLES_LIST = [
-  { id: 1, name: 'IT Admin', slug: 'it_admin', description: 'Full system access: users, roles, reports, incident management.', permissions: ['view_dashboard', 'view_incidents', 'assign_incident', 'update_incident', 'delete_incident', 'manage_users', 'manage_roles', 'view_reports'] },
+  { id: 1, name: 'IT Admin', slug: 'it_admin', description: 'Full system access: users, roles, reports, incident management.', permissions: ['view_dashboard', 'view_incidents', 'assign_incident', 'update_incident', 'delete_incident', 'manage_users', 'manage_roles', 'view_reports', 'send_alert'] },
   { id: 2, name: 'Dispatcher', slug: 'dispatcher', description: 'Assigns and manages incidents across field agencies.', permissions: ['view_dashboard', 'view_incidents', 'assign_incident', 'update_incident'] },
   { id: 3, name: 'SMS Intake Officer', slug: 'sms_intake_officer', description: 'Processes incoming SMS incident reports.', permissions: ['view_dashboard', 'create_sms_incident'] },
   { id: 4, name: 'Field Officer', slug: 'field_officer', description: 'Handles assigned incidents in the field.', permissions: ['view_dashboard', 'view_assigned_incidents'] },
@@ -30,4 +30,3 @@ export const ALL_PERMISSIONS = [
   { key: 'manage_roles', label: 'Manage Roles' },
   { key: 'view_reports', label: 'View Reports' },
 ]
-

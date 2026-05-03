@@ -22,6 +22,7 @@ import AgencyManagement from "./pages/dashboard/AgencyManagement";
 import ConfigManagement from "./pages/dashboard/ConfigManagement";
 import Reports from "./pages/dashboard/Reports";
 import Profile from "./pages/dashboard/Profile";
+import AlertManagement from "./pages/dashboard/AlertManagement";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="agencies" element={<AgencyManagement />} />
           <Route path="config"   element={<ConfigManagement />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="alerts" element={<AlertManagement />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>

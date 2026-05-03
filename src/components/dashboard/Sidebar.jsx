@@ -9,6 +9,7 @@ import {
   HiOutlineChartBar,
   HiOutlineOfficeBuilding,
   HiOutlineCog,
+  HiOutlineBell,
   HiX,
   HiOutlineUserCircle,
 } from 'react-icons/hi'
@@ -38,6 +39,7 @@ const NAV_GROUPS = [
       { label: 'Roles',    icon: HiOutlineShieldCheck,    path: '/dashboard/roles',    permission: 'manage_roles' },
       { label: 'Agencies', icon: HiOutlineOfficeBuilding, path: '/dashboard/agencies', permission: 'manage_users'   },
       { label: 'Config',   icon: HiOutlineCog,            path: '/dashboard/config',   permission: 'manage_config' },
+      { label: 'Public Alerts', icon: HiOutlineBell,       path: '/dashboard/alerts',   permission: 'send_alert'    },
       { label: 'Reports',  icon: HiOutlineChartBar,       path: '/dashboard/reports',  permission: 'view_reports'  },
     ],
   },
